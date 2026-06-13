@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 门诊病历生成 MVP</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" id="workspaceApp">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">门诊通用病历</p>
+          <h1>AI 问诊病历工作台</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="doctor-box">
+            <span id="doctorName">未登录</span>
+            <button id="logoutBtn">退出</button>
+          </div>
+          <div class="status-pill" id="visitStatus">待登录</div>
+        </div>
+      </header>
+
+      <section class="patient-band" aria-label="患者与就诊信息">
+        <label>
+          患者姓名
+          <input id="patientName" value="张三" />
+        </label>
+        <label>
+          性别
+          <select id="patientGender">
+            <option>男</option>
+            <option>女</option>
+          </select>
+        </label>
+        <label>
+          年龄
+          <input id="patientAge" type="number" min="0" value="45" />
+        </label>
+        <label>
+          科室
+          <input id="department" value="全科门诊" />
+        </label>
+        <label>
+          就诊号
+          <input id="visitNo" value="V202606070001" />
+        </label>
+      </section>
+
+      <section class="workspace">
+        <aside class="panel audio-panel">
+          <div class="panel-header">
+            <h2>录音上传</h2>
+            <span id="audioMeta">未选择文件</span>
+          </div>
+
+          <label class="upload-box" for="audioFile">
+            <input id="audioFile" type="file" accept="audio/*" />
+            <strong>选择问诊录音</strong>
+            <span>支持 wav、mp3、m4a 等音频文件</span>
+          </label>
+
+          <div class="button-row">
+            <button id="transcribeBtn" class="primary" disabled>开始转写</button>
+            <button id="demoBtn">载入示例</button>
+          </div>
+
+          <div class="button-row">
+            <button id="startRecordBtn" class="primary">开始实时录音</button>
+            <button id="stopRecordBtn" disabled>停止录音</button>
+          </div>
+          <p class="recording-hint" id="recordingHint">实时录音会分段上传并追加转写文本。</p>
+
+          <div class="panel-header tight">
+            <h2>转写文本</h2>
+            <button id="clearTranscriptBtn" class="ghost">清空</button>
+          </div>
+          <textarea id="transcriptInput" class="transcript-box" placeholder="转写文本会出现在这里，也可以手动粘贴医生与患者对话。"></textarea>
+        </aside>
+
+        <section class="panel editor-panel">
+          <div class="panel-header">
+            <h2>AI 病历草稿</h2>
+            <div class="button-row compact">
+              <button id="generateBtn" class="primary">生成草稿</button>
+              <button id="confirmBtn" disabled>医生确认</button>
+            </div>
+          </div>
+
+          <div class="template-grid">
+            <label>
+              主诉
+              <input id="chiefComplaint" placeholder="AI 自动生成" />
+            </label>
+            <label>
+              初步诊断
+              <input id="diagnosis" placeholder="待医生确认" />
+            </label>
+          </div>
+
+          <div class="diagnosis-options-block">
+            <div class="inline-title">可能疾病选项</div>
+            <div id="diagnosisOptions" class="diagnosis-options">等待 AI 生成</div>
+          </div>
+
+          <label>
+            现病史
+            <textarea id="hpi" class="field-area"></textarea>
+          </label>
+          <label>
+            既往史
+            <textarea id="pastHistory" class="field-area short"></textarea>
+          </label>
+          <label>
+            过敏史
+            <textarea id="allergyHistory" class="field-area short"></textarea>
+          </label>
+          <label>
+            体格检查
+            <textarea id="physicalExam" class="field-area short"></textarea>
+          </label>
+          <label>
+            处理意见
+            <textarea id="plan" class="field-area"></textarea>
+          </label>
+        </section>
+
+        <aside class="panel qa-panel">
+          <div class="panel-header">
+            <h2>质控与导出</h2>
+          </div>
+
+          <div class="qa-block">
+            <h3>缺失项提醒</h3>
+            <ul id="missingList">
+              <li>等待生成草稿</li>
+            </ul>
+          </div>
+
+          <div class="qa-block">
+            <h3>风险提示</h3>
+            <ul id="riskList">
+              <li>等待生成草稿</li>
+            </ul>
+          </div>
+
+          <div class="qa-block">
+            <h3>原文依据</h3>
+            <div id="evidenceList" class="evidence-list">等待生成草稿</div>
+          </div>
+
+          <div class="export-actions">
+            <button id="exportTxtBtn" disabled>导出 TXT</button>
+            <button id="exportJsonBtn" disabled>导出 JSON</button>
+            <button id="printBtn" disabled>打印病历</button>
+            <button id="auditBtn">查看审计</button>
+          </div>
+        </aside>
+      </section>
+
+      <section id="printRecord" class="print-record" aria-label="打印病历"></section>
+      <section id="auditPanel" class="audit-panel" hidden>
+        <div class="panel-header">
+          <h2>审计日志</h2>
+          <button id="closeAuditBtn" class="ghost">关闭</button>
+        </div>
+        <div id="auditList" class="audit-list"></div>
+      </section>
+    </main>
+
+    <script src="./app.js?v=20260608-sherpa-streaming-asr-1"></script>
+  </body>
+</html>
